@@ -1,7 +1,8 @@
 // loading in neaded libraries
-const inquirer = require("inquire");
+const inquirer = require("inquirer");
 const fs =require("fs");
-
+let department_choices =[];
+let role_choices =[];
 
 //   --------------- Arrays holding questions for usuer input ------------------------
     //array of objects for menu question
@@ -63,7 +64,7 @@ const employee_questions = [
         type: "list",
         message:"What is the role of the new employee?",
         name: "employee_firstname",
-        choices: [role_choices], // TO DO: create variable to hold roles
+        choices: [role_choices], // TO DO: create variable to hold roles...database
     },
     {
         type: "input",
@@ -72,6 +73,15 @@ const employee_questions = [
         default: "Missing manager name",
     },
 
+]
+
+//  array of object to hold question to update the role of an employee
+const role_update_qustions = [
+    {
+        type: "list",
+        name: "new_role",
+        choices: [role_choices],
+    }
 ]
 
 // ----------------------functions to deal with processing user input ----------------------------
@@ -123,6 +133,7 @@ function showEmployees(){
 // THEN I am presented with a formatted table showing employee data, including employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to
 };
 
+//function to create new department from user and add it to the db
 function addDepartment(){
 
     // WHEN I choose to add a department
@@ -133,25 +144,42 @@ function addDepartment(){
 
     })
 };
-function addRole(){
 
+//function to create role from user input
+function addRole(){
     // WHEN I choose to add a role
 // THEN I am prompted to enter the name, salary, and department for the role and that role is added to the database
+    inquirer.prompt(role_questions)
+    .then(answer => {
+        //write to database
+
+    })
 };
+
+//fuction to create employee from user input
 function addEmployee(){
 // WHEN I choose to add an employee
 // THEN I am prompted to enter the employee’s first name, last name, role, and manager, and that employee is added to the database
-
+    inquirer.prompt(employee_questions)
+    .then(answer => {
+        //write to database
+    })
 };
 
+// function to change an employee role and rewrite to database
 function updateEmployee(){
+
 // WHEN I choose to update an employee role
 // THEN I am prompted to select an employee to update and their new role and this information is updated in the database
+    inquirer.prompt(role_update_qustions)
+    .then(answer => {
+        //write to database
+    })
 
 };
 
 
-
+// --------------------------------------Action Code --------------------------------------------------
 
 // Function call to initialize app menu
 init_menu();
