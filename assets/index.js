@@ -1,10 +1,11 @@
+// loading in neaded libraries
 const inquirer = require("inquire");
+const fs =require("fs");
 
 
-
-
-//array of objects for menu question
-const intro_questions =[
+//   --------------- Arrays holding questions for usuer input ------------------------
+    //array of objects for menu question
+const menu_questions =[
     {
         type: "list",
         message: "What would you like to do?",
@@ -13,8 +14,7 @@ const intro_questions =[
     },
   
 ]
-
-// array of objects to hold questions to add a department
+    // array of objects to hold questions to add a department
 const department_questions = [
     {
         type: "input",
@@ -24,8 +24,7 @@ const department_questions = [
     },
 
 ]
-
-// array of objects to hold questions to add a new role
+    // array of objects to hold questions to add a new role
 const role_questions =[
     {
         type: "input",
@@ -46,7 +45,7 @@ const role_questions =[
         choices: [department_choices], // TO DO: create variable to hold departments
     },
 ]
-// array of objects to hold questions to add a new employee
+    // array of objects to hold questions to add a new employee
 const employee_questions = [
     {
         type: "input",
@@ -75,11 +74,11 @@ const employee_questions = [
 
 ]
 
-
+// ----------------------functions to deal with processing user input ----------------------------
 
 // function that starts inquirer with the menu
 function init_menu() {
-    inquirer.prompt(intro_questions)
+    inquirer.prompt(menu_questions)
             //
         .then(answer => {
             //debugging
@@ -87,66 +86,77 @@ function init_menu() {
             //switch function to decide next action
             switch(answer.menu){
                 case "View All Departments":
-                    return ;//function to view departments
+                    return showDepartments();//function to view departments
                 case "view all roles":
-                    return ;//function to  view roles
+                    return showRoles();//function to  view roles
                 case "view all employees":
-                    return ;//function to view employees
+                    return showEmployees();//function to view employees
                 case "add a department":
-                    return; //fuction to add department
+                    return addDepartment();//fuction to add department
                 case "add a role":
-                    return; //fuction to add role
-            
+                    return addRole(); //fuction to add role
                 case "add an employee":
-                    return; //fuction to add an employee
+                    return addEmployee(); //fuction to add an employee
             
                 case "update an employee role":
-                    return; //fuction to update an employee
+                    return updateEmployee(); //fuction to update an employee
             }         
         })
-}
+};
+
+// function to display created departments
+function showDepartments() {
+
+// WHEN I choose to view all departments
+// THEN I am presented with a formatted table showing department names and department ids
+};
+
+// function to display table of roles displaying title, role id, department, salaray
+function showRoles() {
+// WHEN I choose to view all roles
+// THEN I am presented with the job title, role id, the department that role belongs to, and the salary for that role
+};
+
+//function to display table displaying employee id, first name, last name, job titles, departments, salaries, manager
+function showEmployees(){
+// WHEN I choose to view all employees
+// THEN I am presented with a formatted table showing employee data, including employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to
+};
+
+function addDepartment(){
+
+    // WHEN I choose to add a department
+// THEN I am prompted to enter the name of the department and that department is added to the database
+    inquirer.prompt(department_questions)
+    .then(answer => {
+        //write to database        
+
+    })
+};
+function addRole(){
+
+    // WHEN I choose to add a role
+// THEN I am prompted to enter the name, salary, and department for the role and that role is added to the database
+};
+function addEmployee(){
+// WHEN I choose to add an employee
+// THEN I am prompted to enter the employee’s first name, last name, role, and manager, and that employee is added to the database
+
+};
+
+function updateEmployee(){
+// WHEN I choose to update an employee role
+// THEN I am prompted to select an employee to update and their new role and this information is updated in the database
+
+};
+
+
+
+
 // Function call to initialize app menu
 init_menu();
 
 
 
 
-// WHEN I choose to view all departments
-// THEN I am presented with a formatted table showing department names and department ids
 
-
-
-
-
-// WHEN I choose to view all roles
-// THEN I am presented with the job title, role id, the department that role belongs to, and the salary for that role
-
-
-
-// WHEN I choose to view all employees
-// THEN I am presented with a formatted table showing employee data, including employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to
-
-
-
-
-
-
-
-// WHEN I choose to add a department
-// THEN I am prompted to enter the name of the department and that department is added to the database
-
-
-
-
-// WHEN I choose to add a role
-// THEN I am prompted to enter the name, salary, and department for the role and that role is added to the database
-
-
-
-// WHEN I choose to add an employee
-// THEN I am prompted to enter the employee’s first name, last name, role, and manager, and that employee is added to the database
-
-
-
-// WHEN I choose to update an employee role
-// THEN I am prompted to select an employee to update and their new role and this information is updated in the database
