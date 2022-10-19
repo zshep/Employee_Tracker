@@ -1,8 +1,70 @@
 // loading in neaded libraries
 const inquirer = require("inquirer");
-const fs =require("fs");
+const mysql = require('mysql2');
+const cTable = require('console.table');
+
 let department_choices =[];
 let role_choices =[];
+
+// create the connection to database
+const dbconnect = mysql.createConnection(
+    {
+      host: 'localhost',
+      user: 'root',
+      database: 'owner_db'
+    },
+    console.log('Connected to the database owner_db')
+    );
+  
+  
+const showDepartments = async () => {
+    return dbconnect.query('SELECT * FROM department;') 
+
+}
+  
+const getRole =async ()
+  
+  // get roles
+      //job title,
+      //role id
+      //department belongs to
+      //salary
+  
+  
+  //get all employees
+    // employee ids
+    // first names
+    // last names
+    // job titles
+    // departments
+    // salaries
+    // managers of employee
+  
+  //create department
+      // department name
+    
+  
+  // create role
+    // role_name
+    // role_salary
+    // department name
+  
+  
+  // create an employee
+    // first name
+    // last name
+    // role
+    // manager
+  
+  
+  // update an employee role
+    // change role
+
+
+
+
+
+
 
 //   --------------- Arrays holding questions for usuer input ------------------------
     //array of objects for menu question
