@@ -150,8 +150,8 @@ function init_menu() {
 
 // function to show all departments in table
 const showDepartments = () => {
-    console.log('show department has started')
-    dbconnect.query('SELECT * FROM department;', function (err, results) {
+    console.log('show department has started', '\n', '\n')
+    dbconnect.query('SELECT id AS department_id, name AS department_name FROM department;', function (err, results) {
         console.table(results);
     });
     setTimeout(() => {
@@ -160,11 +160,13 @@ const showDepartments = () => {
 }
 
 
-//function to display table of roles displaying title, role id, department, salaray
+//function to display table of roles: displaying title, role id, department name, salaray
 function showRoles() {
-    // THEN I am presented with the job title, role id, the department that role belongs to, and the salary for that role
-    console.log('show roles has started')
-    dbconnect.query('SELECT * FROM role;', function (err, results) {
+    console.log('show roles has started', '\n', '\n')
+    dbconnect.query('SELECT role.id AS role_id, role.title, role.salary, department.name AS department_name FROM role INNER JOIN department ON role.department_id =department.id;', function (err, results) {
+        if(err){
+            console.error(err);
+        }
         console.table(results);
     } );
     setTimeout(() => {
@@ -174,10 +176,13 @@ function showRoles() {
 
 //function to display table displaying employee id, first name, last name, job titles, departments, salaries, manager
 function showEmployees() {
-    console.log('show employees has started')
-    dbconnect.query('SELECT * FROM employee;', function (err, results) {
+    console.log('show employees has started', '\n', '\n')
+    dbconnect.query('SELECT employee.id AS employee_id, employee.first_name, employee.last_name, role.title, department.name AS department_name, role.salary FROM employee INNER JOIN role ON employee.role_id =role.id;', function (err, results) {
+        if(err){
+            console.error(err);
+        }
         console.table(results);
-    } );
+    });
     setTimeout(() => {
         init_menu();
     }, 3000);   
