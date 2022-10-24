@@ -5,8 +5,8 @@ const cTable = require('console.table');
 require('dotenv').config();
 
 
-let department_choices = [];
-let role_choices = [];
+const department_choices = [];
+const role_choices = [];
 
 // create the connection to database
 const dbconnect = mysql.createConnection(
@@ -159,8 +159,7 @@ const showDepartments = () => {
     }, 3000);    
 }
 
-
-//function to display table of roles: displaying title, role id, department name, salaray
+//function to show all roles in table 
 function showRoles() {
     console.log('show roles has started', '\n', '\n')
     dbconnect.query('SELECT role.id AS role_id, role.title, role.salary, department.name AS department_name FROM role INNER JOIN department ON role.department_id =department.id;', function (err, results) {
@@ -174,10 +173,10 @@ function showRoles() {
     }, 3000);   
 };
 
-//function to display table displaying employee id, first name, last name, job titles, departments, salaries, manager
+//function to display all employees in table
 function showEmployees() {
     console.log('show employees has started', '\n', '\n')
-
+    //id, employee first name/last name, role title, salary, department, and manager name
     dbconnect.query(
         `SELECT employee.id AS employee_id, employee.first_name, employee.last_name, role.title AS job_title, role.salary, department.name AS department_name, CONCAT(manager.first_name, ' ', manager.last_name) AS Manager_name FROM employee LEFT JOIN role ON role.id = employee.role_id LEFT JOIN department ON role.department_id = department.id LEFT JOIN employee Manager ON manager.id = employee.manager_id;`, function (err, results) {
         if(err){
@@ -191,26 +190,55 @@ function showEmployees() {
 };
 
 //function to create new department from user and add it to the db
-function addDepartment() {
+async function addDepartment() {
 
-    // WHEN I choose to add a department
-    // THEN I am prompted to enter the name of the department and that department is added to the database
-    inquirer.prompt(department_questions)
+    // Uses inquirer to get user input on new department name
+       await inquirer.prompt(department_questions)
         .then(answer => {
-            //write to database        
-
-        })
+            //adds new department into table
+            dbconnect.query(      
+                `INSERT INTO department (name) VALUES ('${answer.department_name}');`, function(err, results){
+                    if(err){
+                        console.error(err);
+                    }
+                console.log(`Adding the department ${answer.department_name} was successful`);
+                }
+            )
+        });
+            init_menu();      
 };
 
 // //function to create role from user input
-function addRole() {
-    // WHEN I choose to add a role
-    // THEN I am prompted to enter the name, salary, and department for the role and that role is added to the database
-    inquirer.prompt(role_questions)
-        .then(answer => {
-            //write to database
-
-        })
+async function addRole() {
+   
+    //adding in department name/id into empty array
+    dbconnect.query(
+        `SELECT * FROM department`, function(err, results){
+            if(err){
+                console.log('could not populate department array');
+                console.error(err);
+            }
+            results.map((department) => department_choices.push({
+            name: department.name, 
+            dep_id: department.id}))
+            console.log(department_choices);
+        }
+    )
+    await inquirer.prompt(role_questions)
+    .then(answer => {
+        //adds new role into table
+        console.table(answer);
+        dbconnect.query(      
+            `INSERT INTO role (title, salary, department_id) VALUES ('${answer.role_name}', ${answer.role_salary}, ${answer.role_department});`, function(err, results){
+                if(err){
+                    console.error(err);
+                }
+                console.table(results);
+                console.log(`Adding the new role of ${answer.role_name} was successful`);
+            }
+        )
+    });
+        init_menu();  
 };
 
 //fuction to create employee from user input
