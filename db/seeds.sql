@@ -11,7 +11,7 @@ VALUES (01, 'Manager', 360000, 003),
         (04, 'Ass_regional_manager', 200000, 001);
 
 INSERT INTO employee (id, first_name, last_name, role_id, manager_id)
-VALUES (001, "Micheal","Scott", 03, 01),
+VALUES (001, "Micheal","Scott", 01, NULL),
         (002, "Toby", "Noname", 02, 01),
-        (003, "Jim", "Halpert", 01, 01),
-        (004, "Dwight", "Schrute", 01, 01);
+        (003, "Jim", "Halpert", 03, 01),
+        (004, "Dwight", "Schrute", 04, 01);

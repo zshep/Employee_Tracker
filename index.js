@@ -177,7 +177,9 @@ function showRoles() {
 //function to display table displaying employee id, first name, last name, job titles, departments, salaries, manager
 function showEmployees() {
     console.log('show employees has started', '\n', '\n')
-    dbconnect.query('SELECT employee.id AS employee_id, employee.first_name, employee.last_name, role.title, department.name AS department_name, role.salary FROM employee INNER JOIN role ON employee.role_id =role.id;', function (err, results) {
+
+    dbconnect.query(
+        `SELECT employee.id AS employee_id, employee.first_name, employee.last_name, role.title AS job_title, role.salary, department.name AS department_name, CONCAT(manager.first_name, ' ', manager.last_name) AS Manager_name FROM employee LEFT JOIN role ON role.id = employee.role_id LEFT JOIN department ON role.department_id = department.id LEFT JOIN employee Manager ON manager.id = employee.manager_id;`, function (err, results) {
         if(err){
             console.error(err);
         }
