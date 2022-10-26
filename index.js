@@ -67,7 +67,7 @@ const role_questions = [
         type: "list",
         message: "what department does this new role belong to?",
         name: "role_department",
-        choices: [department_choices], // TO DO: create variable to hold departments
+        choices: department_choices, // TO DO: create variable to hold departments
     },
 ]
 // array of objects to hold questions to add a new employee
@@ -212,18 +212,22 @@ async function addDepartment() {
 async function addRole() {
    
     //adding in department name/id into empty array
-    dbconnect.query(
+     dbconnect.query(
         `SELECT * FROM department`, function(err, results){
             if(err){
                 console.log('could not populate department array');
                 console.error(err);
             }
             results.map((department) => department_choices.push({
-            name: department.name, 
-            dep_id: department.id}))
+            name: department.name,
+            value: department.id
+            }))
             console.log(department_choices);
         }
     )
+    //debugging...why isn't this being called?
+    console.log('role array should have been populated')
+    
     await inquirer.prompt(role_questions)
     .then(answer => {
         //adds new role into table
@@ -235,10 +239,10 @@ async function addRole() {
                 }
                 console.table(results);
                 console.log(`Adding the new role of ${answer.role_name} was successful`);
+                init_menu();  
             }
         )
     });
-        init_menu();  
 };
 
 //fuction to create employee from user input
