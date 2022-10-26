@@ -7,6 +7,7 @@ require('dotenv').config();
 
 const department_choices = [];
 const role_choices = [];
+const employee_choices = [];
 
 // create the connection to database
 const dbconnect = mysql.createConnection(
@@ -87,14 +88,14 @@ const employee_questions = [
     {
         type: "list",
         message: "What is the role of the new employee?",
-        name: "employee_firstname",
-        choices: [role_choices], // TO DO: create variable to hold roles...database
+        name: "employee_role",
+        choices: role_choices, 
     },
     {
         type: "input",
         message: "Who is the manager of the new employee?",
-        name: "employee_firstname",
-        default: "Missing manager name",
+        name: "employee_manager",
+        choices: employee_choices,
     },
 
 ]
@@ -239,19 +240,49 @@ async function addRole() {
                 }
                 console.table(results);
                 console.log(`Adding the new role of ${answer.role_name} was successful`);
-                init_menu();  
+                setTimeout(() => {
+                    init_menu();
+                }, 3000);   
             }
         )
     });
 };
 
 //fuction to create employee from user input
-function addEmployee() {
-    // WHEN I choose to add an employee
+async function addEmployee() {
+   
+    //grab role ID/role name for user to select as a choice in empty array
+    dbconnect.query(
+        `SELECT id, title FROM role`, function(err, results){
+            if(err){
+                console.log('could not populate role array');
+                console.error(err);
+            }
+            results.map((role) => role_choices.push({
+            name: role.title,
+            value: role.id
+            }))
+            console.log(role_choices);
+        }
+    )
+
     // THEN I am prompted to enter the employee’s first name, last name, role, and manager, and that employee is added to the database
-    inquirer.prompt(employee_questions)
+    await inquirer.prompt(employee_questions)
         .then(answer => {
             //write to database
+            console.table(answer);
+            dbconnect.query(
+                `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${answer.employee_firstname}', ${answer.employee_lastname}, ${answer.employee_role}, ${answer.employee_manager});`, function(err, results){
+                    if(err){
+                        console.error(err);
+                    }
+                    console.table(results);
+                    console.log(`Adding the new employee, ${answer.employee_firstname} ${answer.employee_lastname} was successful`);
+                    setTimeout(() => {
+                        init_menu();
+                    }, 3000);   
+                }
+            )
         })
 };
 
