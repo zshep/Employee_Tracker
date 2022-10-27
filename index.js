@@ -7,7 +7,7 @@ require('dotenv').config();
 
 const department_choices = [];
 const role_choices = [];
-const employee_choices = [];
+const employer_choices = [];
 
 // create the connection to database
 const dbconnect = mysql.createConnection(
@@ -95,7 +95,7 @@ const employee_questions = [
         type: "input",
         message: "Who is the manager of the new employee?",
         name: "employee_manager",
-        choices: employee_choices,
+        choices: employer_choices,
     },
 
 ]
@@ -105,7 +105,7 @@ const role_update_qustions = [
     {
         type: "list",
         name: "new_role",
-        choices: [role_choices],
+        choices: role_choices,
     }
 ]
 
@@ -265,12 +265,28 @@ async function addEmployee() {
             console.log(role_choices);
         }
     )
+        //query to grab manager name
+    dbconnect.query(
+        `SELECT CONCAT(manager.first_name, '', manager.last_name) AS Manager_name FROM employee LEFT JOIN employee Manager ON manager.id = employee.manager_id`, function(err, results){
+            if(err){
+                console.log(`could not populate manager name`);
+                console.error(err);
+            }
+            results.map((employer) => employer_choices.push({
+                name: employer.title,
+                value: employer.manager_id
+                }))
+                console.log(employer_choices);
+            }
+    )
 
     // THEN I am prompted to enter the employee’s first name, last name, role, and manager, and that employee is added to the database
     await inquirer.prompt(employee_questions)
         .then(answer => {
             //write to database
             console.table(answer);
+
+
             dbconnect.query(
                 `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${answer.employee_firstname}', ${answer.employee_lastname}, ${answer.employee_role}, ${answer.employee_manager});`, function(err, results){
                     if(err){
