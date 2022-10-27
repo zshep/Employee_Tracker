@@ -68,7 +68,7 @@ const role_questions = [
         type: "list",
         message: "what department does this new role belong to?",
         name: "role_department",
-        choices: department_choices, // TO DO: create variable to hold departments
+        choices: department_choices, 
     },
 ]
 // array of objects to hold questions to add a new employee
@@ -92,7 +92,7 @@ const employee_questions = [
         choices: role_choices, 
     },
     {
-        type: "input",
+        type: "list",
         message: "Who is the manager of the new employee?",
         name: "employee_manager",
         choices: employer_choices,
@@ -262,33 +262,33 @@ async function addEmployee() {
             name: role.title,
             value: role.id
             }))
-            console.log(role_choices);
+            //console.log(role_choices);
         }
     )
+
+    // `SELECT employee.id, CONCAT(manager.first_name, '', manager.last_name) AS Manager_name FROM employee LEFT JOIN employee Manager ON manager.id = employee.manager_id WHERE employee.id = 1`
         //query to grab manager name
     dbconnect.query(
-        `SELECT CONCAT(manager.first_name, '', manager.last_name) AS Manager_name FROM employee LEFT JOIN employee Manager ON manager.id = employee.manager_id`, function(err, results){
+        `SELECT CONCAT(employee.first_name, ' ', employee.last_name) AS Manager_name, role_id FROM employee WHERE employee.role_id =1`, function(err, results){
             if(err){
                 console.log(`could not populate manager name`);
                 console.error(err);
             }
-            results.map((employer) => employer_choices.push({
-                name: employer.title,
-                value: employer.manager_id
+            console.log(results);
+            results.map((employee) => employer_choices.push({
+                name: employee.Manager_name,
+                value: employee.role_id
                 }))
                 console.log(employer_choices);
             }
     )
-
-    // THEN I am prompted to enter the employee’s first name, last name, role, and manager, and that employee is added to the database
+            //getting user input on new employee
     await inquirer.prompt(employee_questions)
         .then(answer => {
             //write to database
             console.table(answer);
-
-
             dbconnect.query(
-                `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${answer.employee_firstname}', ${answer.employee_lastname}, ${answer.employee_role}, ${answer.employee_manager});`, function(err, results){
+                `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${answer.employee_firstname}', '${answer.employee_lastname}', ${answer.employee_role}, ${answer.employee_manager});`, function(err, results){
                     if(err){
                         console.error(err);
                     }
