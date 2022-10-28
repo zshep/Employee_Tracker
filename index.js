@@ -4,9 +4,10 @@ const mysql = require('mysql2');
 const cTable = require('console.table');
 require('dotenv').config();
 
-
+//empty arrays to hold info
 const department_choices = [];
 const role_choices = [];
+const employee_choices = [];
 const employer_choices = [];
 
 // create the connection to database
@@ -101,12 +102,19 @@ const employee_questions = [
 ]
 
 //  array of object to hold question to update the role of an employee
-const role_update_qustions = [
+const role_update_questions = [
     {
         type: "list",
-        name: "new_role",
+        message: "Which employee would you like to update?",
+        name: "update_employee",
+        choices: employee_choices,
+    },
+    {
+        type: "list",
+        message: "What is the new role for this employee?",
+        name: "update_role",
         choices: role_choices,
-    }
+    },
 ]
 
 // ----------------------functions to deal with processing user input ----------------------------
@@ -266,8 +274,7 @@ async function addEmployee() {
         }
     )
 
-    // `SELECT employee.id, CONCAT(manager.first_name, '', manager.last_name) AS Manager_name FROM employee LEFT JOIN employee Manager ON manager.id = employee.manager_id WHERE employee.id = 1`
-        //query to grab manager name
+         //query to grab manager name
     dbconnect.query(
         `SELECT CONCAT(employee.first_name, ' ', employee.last_name) AS Manager_name, role_id FROM employee WHERE employee.role_id =1`, function(err, results){
             if(err){
@@ -303,14 +310,52 @@ async function addEmployee() {
 };
 
 // function to change an employee role and rewrite to database
-function updateEmployee() {
+async function updateEmployee() {
+    console.log('update employee started')
+    // grabbing all th eemployees to put into an array
+    dbconnect.query(
+        `SELECT employee.id AS employee_id, CONCAT(employee.first_name, '',employee.last_name) AS employee_name FROM employee`, function (err, results) {
+        if(err){
+            console.error(err);
+            console.log("could not grab list of employees");
+        }
+        results.map((employee) => employee_choices.push({
+            name: employee.employee_name,
+            value: employee.employee_id,
+            }))
+            console.log("the array has been filled with employees");
+            console.log(employee_choices);
+    });
+    
+    //grab role ID/role name for user to select as a choice in empty array
+    dbconnect.query(
+        `SELECT id, title FROM role`, function(err, results){
+            if(err){
+                console.log('could not populate role array');
+                console.error(err);
+            }
+            results.map((role) => role_choices.push({
+            name: role.title,
+            value: role.id
+            }))
+            console.log('the array has been filled with roles');
+            console.log(role_choices);
+        }
+    );
+    console.log("did this part fire?")
 
-    // WHEN I choose to update an employee role
-    // THEN I am prompted to select an employee to update and their new role and this information is updated in the database
-    inquirer.prompt(role_update_qustions)
+    
+    //get user input to select an employee
+    await inquirer.prompt(role_update_questions)
         .then(answer => {
-            //write to database
+            console.log("the answer portion of inquirer has started");
+            dbconnect.query(
+                `UPDATE employee SET role_id = ${answer.update_role} WHERE id = ${answer.update_employee};`
+            )
         })
+        setTimeout(() => {
+            init_menu();
+        }, 3000); 
 
 };
 
