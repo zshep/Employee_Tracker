@@ -1,7 +1,6 @@
 // loading in neaded libraries
 const inquirer = require("inquirer");
 const mysql = require('mysql2');
-const cTable = require('console.table');
 require('dotenv').config();
 
 //empty arrays to hold info
@@ -22,13 +21,6 @@ const dbconnect = mysql.createConnection(
 );
 
 
-// dbconnect.connect(err => {
-//     if (err) {
-//         console.error(err);
-//     } else {
-//         console.log('conneciton worked');
-//     }
-// })
 
 //   --------------- Arrays holding questions for usuer input ------------------------
 //array of objects for menu question
@@ -103,6 +95,12 @@ const employee_questions = [
 
 //  array of object to hold question to update the role of an employee
 const role_update_questions = [
+    {
+        type: "list",
+        message: "Are you sure you want to update an employee?",
+        name: "debugging",
+        choices: ["yes","no",],
+    },
     {
         type: "list",
         message: "Which employee would you like to update?",
@@ -217,7 +215,7 @@ async function addDepartment() {
             init_menu();      
 };
 
-// //function to create role from user input
+ //function to create role from user input
 async function addRole() {
    
     //adding in department name/id into empty array
@@ -286,14 +284,14 @@ async function addEmployee() {
                 name: employee.Manager_name,
                 value: employee.role_id
                 }))
-                console.log(employer_choices);
+                //console.log(employer_choices);
             }
     )
             //getting user input on new employee
     await inquirer.prompt(employee_questions)
         .then(answer => {
             //write to database
-            console.table(answer);
+            //console.table(answer);
             dbconnect.query(
                 `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${answer.employee_firstname}', '${answer.employee_lastname}', ${answer.employee_role}, ${answer.employee_manager});`, function(err, results){
                     if(err){
@@ -312,9 +310,9 @@ async function addEmployee() {
 // function to change an employee role and rewrite to database
 async function updateEmployee() {
     console.log('update employee started')
-    // grabbing all th eemployees to put into an array
+    // grabbing all the employees to put into an array
     dbconnect.query(
-        `SELECT employee.id AS employee_id, CONCAT(employee.first_name, '',employee.last_name) AS employee_name FROM employee`, function (err, results) {
+        `SELECT employee.id AS employee_id, CONCAT(employee.first_name, ' ',employee.last_name) AS employee_name FROM employee;`, function (err, results) {
         if(err){
             console.error(err);
             console.log("could not grab list of employees");
@@ -324,7 +322,7 @@ async function updateEmployee() {
             value: employee.employee_id,
             }))
             console.log("the array has been filled with employees");
-            console.log(employee_choices);
+            //console.log(employee_choices);
     });
     
     //grab role ID/role name for user to select as a choice in empty array
@@ -339,19 +337,18 @@ async function updateEmployee() {
             value: role.id
             }))
             console.log('the array has been filled with roles');
-            console.log(role_choices);
+            //console.log(role_choices);
         }
     );
-    console.log("did this part fire?")
-
-    
+        
     //get user input to select an employee
     await inquirer.prompt(role_update_questions)
         .then(answer => {
-            console.log("the answer portion of inquirer has started");
+            //console.log("the answer portion of inquirer has started");
             dbconnect.query(
                 `UPDATE employee SET role_id = ${answer.update_role} WHERE id = ${answer.update_employee};`
             )
+            console.log(`Updating the role of employee was successful`, '\n', '\n');
         })
         setTimeout(() => {
             init_menu();
